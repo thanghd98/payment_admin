@@ -1,10 +1,9 @@
 import { CHAIN_DATA } from "@wallet/constants";
 import { PaymentAbstract } from "../../../abstract";
-import { IsAdminParams, PaymentEngineConfig, SetAdminParams, SetItemParams, SetOracleTokensParams, SetPartnerParams } from "../../../types";
+import { AddItemParams, DataResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetOracleTokensParams, SetPartnerParams, UodateItemParams } from "../../../types";
 import { PaymentEvmFactory } from "./factory";
-import Web3 from "web3";
-
-const { utils } = Web3
+import hash from 'crypto-js/sha256'
+import {utils} from 'ethers'
 
 export class PaymentEvmAdmin extends PaymentAbstract{
     factory: PaymentEvmFactory
@@ -14,7 +13,7 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         this.factory = new PaymentEvmFactory(_config.enviroment)
     }
 
-    async setAdmins(params: SetAdminParams): Promise<Record<string, string>> {
+    async setAdmins(params: SetAdminParams): Promise<DataResponse> {
         const { addresses, isActives, chain } = params
 
         try {  
@@ -43,7 +42,7 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         }
     }
 
-    async setOracleTokens(params: SetOracleTokensParams): Promise<Record<string, string>> {
+    async setOracleTokens(params: SetOracleTokensParams): Promise<DataResponse> {
         const { params: paramsSetting, chain } = params
 
         try {  
@@ -62,13 +61,13 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         }
     }
 
-    async setPartner(params: SetPartnerParams): Promise<Record<string, string>> {
+    async setPartner(params: SetPartnerParams): Promise<DataResponse> {
         const { partnerCode, partnerInfo, chain } = params
 
         try {  
             const partnerInfoFormat = Object.values(partnerInfo)
             const { contract, address } = this.factory.getContract(chain)
-            const data = contract.methods.setPartner(utils.fromAscii(partnerCode), partnerInfoFormat).encodeABI()
+            const data = contract.methods.createPartner(utils.formatBytes32String(partnerCode), partnerInfoFormat).encodeABI()
 
             return {
                 data,
@@ -79,15 +78,36 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         }
     }
     
-    async setItems(params: SetItemParams): Promise<Record<string, string>> {
+    async addItems(params: AddItemParams): Promise<DataResponse> {
         const { params: paramsSetting, chain } = params
 
         try {
             const { contract, address } = this.factory.getContract(chain)
 
             //convert params
-            const itemCodes = paramsSetting.map((item) =>  utils.fromAscii(item.itemKey))
-            const itemInfos = paramsSetting.map((item) => (Object.values({...item.itemInfo, partnerCode: utils.fromAscii(item.itemInfo.partnerCode)})))
+            const itemCodes = paramsSetting.map((item) =>  utils.formatBytes32String(this.generateItemCode(item?.itemInfo?.partnerCode)))
+            const itemInfos = paramsSetting.map((item) => (Object.values({...item?.itemInfo, partnerCode: utils.formatBytes32String(item?.itemInfo?.partnerCode)})))
+
+            const data = contract.methods.setItems(itemCodes, itemInfos).encodeABI()
+
+            return {
+                data,
+                contractAddress: address
+            }
+        } catch (error) {
+            throw new Error(error as unknown as string)
+        }
+    }
+
+    async updateItems(params: UodateItemParams): Promise<DataResponse> {
+        const { params: paramsSetting, chain } = params
+
+        try {
+            const { contract, address } = this.factory.getContract(chain)
+
+            //convert params
+            const itemCodes = paramsSetting.map((item) => utils.formatBytes32String(item.itemKey))
+            const itemInfos = paramsSetting.map((item) => (Object.values({...item.itemInfo, partnerCode: utils.formatBytes32String(item.itemInfo.partnerCode)})))
 
             const data = contract.methods.setItems(itemCodes, itemInfos).encodeABI()
 
@@ -101,10 +121,13 @@ export class PaymentEvmAdmin extends PaymentAbstract{
     }
 
     hasChain(chain: string): boolean {
-        console.log("🚀 ~ PaymentEvmAdmin ~ hasChain ~ chain:", chain)
         return Object.values(CHAIN_DATA)
             .filter(chain => chain.isWeb3)
             .map(item => item.chain)
             .includes(chain)
+    }
+
+    generateItemCode(partnerCode: string){
+        return partnerCode + '-' + hash(JSON.stringify(partnerCode) + new Date().getTime).toString().slice(0,4)
     }
 }

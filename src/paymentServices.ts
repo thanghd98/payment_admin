@@ -1,6 +1,6 @@
 import { Engines } from "./constants";
 import { PaymentFactory } from "./factory";
-import { Enviroment, IsAdminParams, SetAdminParams, SetItemParams, SetOracleTokensParams, SetPartnerParams } from "./types";
+import { AddItemParams, DataResponse, Enviroment, IsAdminParams, SetAdminParams, SetOracleTokensParams, SetPartnerParams, UodateItemParams } from "./types";
 
 interface Config {
     enviroment: Enviroment
@@ -21,12 +21,12 @@ export class PaymentAdmin {
         return this
     }
 
-    async setAdmins(params: SetAdminParams): Promise<Record<string, string>>{
+    async setAdmins(params: SetAdminParams): Promise<DataResponse>{
         if(this.factory){
             return await this.factory.setAdmins(params)
         }
 
-        return {}
+        throw new Error('Method not implement')
     }
 
 
@@ -38,28 +38,35 @@ export class PaymentAdmin {
         return false
     }
 
-    async setOracleTokens(params: SetOracleTokensParams): Promise<Record<string, string>>{
+    async setOracleTokens(params: SetOracleTokensParams): Promise<DataResponse>{
         if(this.factory){
             return await this.factory.setOracleTokens(params)
         }
 
-        return {}
+        throw new Error('Method not implement')
     }
 
-    async setPartner(params: SetPartnerParams): Promise<Record<string, string>>{
+    async setPartner(params: SetPartnerParams): Promise<DataResponse>{
         if(this.factory){
             return await this.factory.setPartner(params)
         }
 
-        return {}
+        throw new Error('Method not implement')
     }
 
-    async setItems(params: SetItemParams): Promise<Record<string, string>>{
+    async updateItems(params: UodateItemParams): Promise<DataResponse>{
         if(this.factory){
-            return await this.factory.setItems(params)
+            return await this.factory.updateItems(params)
         }
 
-        return {}
+        throw new Error('Method not implement')
     }
 
+    async addItems(params: AddItemParams): Promise<DataResponse>{
+        if(this.factory){
+            return await this.factory.addItems(params)
+        }
+
+        throw new Error('Method not implement')
+    }
 }

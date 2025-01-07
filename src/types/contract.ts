@@ -16,6 +16,6 @@ export interface PaymentContract {
     setAdmins(addresses: string[], isActives: boolean[]): EncodeContext
     isAdmins(addresses: string): CallContext
     setOracleTokens(tokenAddresses: string[], oracleAddresses: string[]): EncodeContext
-    setPartner(partnerCode: string, partnerInfo: (string | boolean)[]): EncodeContext
+    createPartner(partnerCode: string, partnerInfo: (string | boolean)[]): EncodeContext
     setItems(itemCodes: string[], itemInfos: (string | boolean)[][]): EncodeContext
 }

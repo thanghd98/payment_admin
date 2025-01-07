@@ -53,7 +53,17 @@ export interface ItemParams {
     },
 }
 
-export interface SetItemParams {
+export interface UodateItemParams {
     params: Array<ItemParams>
     chain: chainKey
+}
+
+export interface AddItemParams {
+    params: Array<Omit<ItemParams, 'itemKey'>>
+    chain: chainKey
+}
+
+export interface DataResponse {
+    data: string,
+    contractAddress: string
 }
