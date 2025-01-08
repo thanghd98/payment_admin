@@ -1,5 +1,5 @@
 import { PaymentAbstract } from "../abstract"
-import { AddItemParams, DataResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetOracleTokensParams, SetPartnerParams, UodateItemParams } from "../types"
+import { AddItemParams, AddItemResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetOracleTokensParams, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "../types"
 
 export class PaymentFactory {
     engines: PaymentAbstract[]
@@ -19,7 +19,7 @@ export class PaymentFactory {
         return engine
     }
 
-    async setAdmins(params: SetAdminParams): Promise<DataResponse>{
+    async setAdmins(params: SetAdminParams): Promise<Transaction>{
         const { chain } = params
 
         const engine = this.getPaymentByChain(chain)
@@ -52,7 +52,7 @@ export class PaymentFactory {
         throw new Error('Method not implement')
     }
 
-    async setOracleTokens(params: SetOracleTokensParams): Promise<DataResponse>{
+    async setOracleTokens(params: SetOracleTokensParams): Promise<Transaction>{
         const { chain } = params
 
         const engine = this.getPaymentByChain(chain)
@@ -68,7 +68,7 @@ export class PaymentFactory {
         throw new Error('Method not implement')
     }
 
-    async setPartner(params: SetPartnerParams): Promise<DataResponse>{
+    async setPartner(params: SetPartnerParams): Promise<SetPartnerResponse>{
         const { chain } = params
 
         const engine = this.getPaymentByChain(chain)
@@ -85,7 +85,7 @@ export class PaymentFactory {
     }
 
 
-    async addItems(params: AddItemParams): Promise<DataResponse>{
+    async addItems(params: AddItemParams): Promise<AddItemResponse>{
         const { chain } = params
 
         const engine = this.getPaymentByChain(chain)
@@ -101,7 +101,7 @@ export class PaymentFactory {
         throw new Error('Method not implement')
     }
 
-    async updateItems(params: UodateItemParams): Promise<DataResponse>{
+    async updateItems(params: UodateItemParams): Promise<UpdateItemResponse>{
         const { chain } = params
 
         const engine = this.getPaymentByChain(chain)

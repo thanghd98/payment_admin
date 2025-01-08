@@ -1,6 +1,6 @@
 import { CHAIN_DATA } from "@wallet/constants";
 import { PaymentAbstract } from "../../../abstract";
-import { AddItemParams, DataResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetOracleTokensParams, SetPartnerParams, UodateItemParams } from "../../../types";
+import { AddItemParams, AddItemResponse, IsAdminParams, ItemParams, PaymentEngineConfig, SetAdminParams, SetOracleTokensParams, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "../../../types";
 import { PaymentEvmFactory } from "./factory";
 import hash from 'crypto-js/sha256'
 import {utils} from 'ethers'
@@ -13,7 +13,7 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         this.factory = new PaymentEvmFactory(_config.enviroment)
     }
 
-    async setAdmins(params: SetAdminParams): Promise<DataResponse> {
+    async setAdmins(params: SetAdminParams): Promise<Transaction> {
         const { addresses, isActives, chain } = params
 
         try {  
@@ -42,7 +42,7 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         }
     }
 
-    async setOracleTokens(params: SetOracleTokensParams): Promise<DataResponse> {
+    async setOracleTokens(params: SetOracleTokensParams): Promise<Transaction> {
         const { params: paramsSetting, chain } = params
 
         try {  
@@ -61,7 +61,7 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         }
     }
 
-    async setPartner(params: SetPartnerParams): Promise<DataResponse> {
+    async setPartner(params: SetPartnerParams): Promise<SetPartnerResponse> {
         const { partnerCode, partnerInfo, chain } = params
 
         try {  
@@ -69,37 +69,60 @@ export class PaymentEvmAdmin extends PaymentAbstract{
             const { contract, address } = this.factory.getContract(chain)
             const data = contract.methods.createPartner(utils.formatBytes32String(partnerCode), partnerInfoFormat).encodeABI()
 
-            return {
+            const transaction = {
                 data,
                 contractAddress: address
+            }
+
+            const dataPartner = {
+                partnerCode,
+                partnerInfo
+            }
+
+            return {
+               transaction,
+               data: dataPartner
             }
         } catch (error) {
             throw new Error(error as unknown as string)
         }
     }
     
-    async addItems(params: AddItemParams): Promise<DataResponse> {
+    async addItems(params: AddItemParams): Promise<AddItemResponse> {
         const { params: paramsSetting, chain } = params
 
         try {
             const { contract, address } = this.factory.getContract(chain)
 
             //convert params
-            const itemCodes = paramsSetting.map((item) =>  utils.formatBytes32String(this.generateItemCode(item?.itemInfo?.partnerCode)))
+            const itemCodes = paramsSetting.map((item) =>  this.generateItemCode(item?.itemInfo?.partnerCode))
+            const itemCodesByte32 = itemCodes.map((item) =>  utils.formatBytes32String(item))
             const itemInfos = paramsSetting.map((item) => (Object.values({...item?.itemInfo, partnerCode: utils.formatBytes32String(item?.itemInfo?.partnerCode)})))
 
-            const data = contract.methods.setItems(itemCodes, itemInfos).encodeABI()
+            const data = contract.methods.setItems(itemCodesByte32, itemInfos).encodeABI()
 
-            return {
+            const transaction = {
                 data,
                 contractAddress: address
+            }
+
+            const dataItems: ItemParams[]  = paramsSetting?.map((item, index) => {
+                return {
+                    itemInfo: item.itemInfo,
+                    itemKey: itemCodes[index]
+                }
+            })
+
+            return {
+                transaction,
+                data: dataItems
             }
         } catch (error) {
             throw new Error(error as unknown as string)
         }
     }
 
-    async updateItems(params: UodateItemParams): Promise<DataResponse> {
+    async updateItems(params: UodateItemParams): Promise<UpdateItemResponse> {
         const { params: paramsSetting, chain } = params
 
         try {
@@ -111,9 +134,14 @@ export class PaymentEvmAdmin extends PaymentAbstract{
 
             const data = contract.methods.setItems(itemCodes, itemInfos).encodeABI()
 
-            return {
+            const transaction = {
                 data,
                 contractAddress: address
+            }
+
+            return {
+                transaction,
+                data: paramsSetting
             }
         } catch (error) {
             throw new Error(error as unknown as string)

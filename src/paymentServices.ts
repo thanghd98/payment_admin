@@ -1,6 +1,6 @@
 import { Engines } from "./constants";
 import { PaymentFactory } from "./factory";
-import { AddItemParams, DataResponse, Enviroment, IsAdminParams, SetAdminParams, SetOracleTokensParams, SetPartnerParams, UodateItemParams } from "./types";
+import { AddItemParams, AddItemResponse, Enviroment, IsAdminParams, SetAdminParams, SetOracleTokensParams, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "./types";
 
 interface Config {
     enviroment: Enviroment
@@ -21,7 +21,7 @@ export class PaymentAdmin {
         return this
     }
 
-    async setAdmins(params: SetAdminParams): Promise<DataResponse>{
+    async setAdmins(params: SetAdminParams): Promise<Transaction>{
         if(this.factory){
             return await this.factory.setAdmins(params)
         }
@@ -38,7 +38,7 @@ export class PaymentAdmin {
         return false
     }
 
-    async setOracleTokens(params: SetOracleTokensParams): Promise<DataResponse>{
+    async setOracleTokens(params: SetOracleTokensParams): Promise<Transaction>{
         if(this.factory){
             return await this.factory.setOracleTokens(params)
         }
@@ -46,7 +46,7 @@ export class PaymentAdmin {
         throw new Error('Method not implement')
     }
 
-    async setPartner(params: SetPartnerParams): Promise<DataResponse>{
+    async setPartner(params: SetPartnerParams): Promise<SetPartnerResponse>{
         if(this.factory){
             return await this.factory.setPartner(params)
         }
@@ -54,7 +54,7 @@ export class PaymentAdmin {
         throw new Error('Method not implement')
     }
 
-    async updateItems(params: UodateItemParams): Promise<DataResponse>{
+    async updateItems(params: UodateItemParams): Promise<UpdateItemResponse>{
         if(this.factory){
             return await this.factory.updateItems(params)
         }
@@ -62,7 +62,7 @@ export class PaymentAdmin {
         throw new Error('Method not implement')
     }
 
-    async addItems(params: AddItemParams): Promise<DataResponse>{
+    async addItems(params: AddItemParams): Promise<AddItemResponse>{
         if(this.factory){
             return await this.factory.addItems(params)
         }

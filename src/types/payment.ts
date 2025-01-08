@@ -11,6 +11,11 @@ export interface PaymentEngineConfig{
     enviroment: Enviroment
 }
 
+export interface Transaction {
+    data: string,
+    contractAddress: string
+}
+
 export interface SetAdminParams {
     addresses: string[],
     isActives: boolean[],
@@ -42,6 +47,20 @@ export interface SetPartnerParams {
     chain: chainKey
 }
 
+export interface SetPartnerResponse {
+    data: {
+        partnerCode: string
+        partnerInfo: {
+            isActive: boolean,
+            owner: string,
+            feeReceiver: string,
+            protocolFee: string,
+            commissionFee: string
+        }
+    }
+    transaction: Transaction
+}
+
 export interface ItemParams {
     itemKey: string,
     itemInfo: {
@@ -58,12 +77,17 @@ export interface UodateItemParams {
     chain: chainKey
 }
 
+export interface UpdateItemResponse {
+    data:Array<ItemParams>
+    transaction: Transaction
+}
+
 export interface AddItemParams {
     params: Array<Omit<ItemParams, 'itemKey'>>
     chain: chainKey
 }
 
-export interface DataResponse {
-    data: string,
-    contractAddress: string
+export interface AddItemResponse {
+    data: Array<ItemParams>
+    transaction: Transaction
 }
