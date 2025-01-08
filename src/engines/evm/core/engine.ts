@@ -1,6 +1,6 @@
 import { CHAIN_DATA } from "@wallet/constants";
 import { PaymentAbstract } from "../../../abstract";
-import { AddItemParams, AddItemResponse, IsAdminParams, ItemParams, PaymentEngineConfig, SetAdminParams, SetOracleTokensParams, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "../../../types";
+import { AddItemParams, AddItemResponse, IsAdminParams, ItemParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "../../../types";
 import { PaymentEvmFactory } from "./factory";
 import hash from 'crypto-js/sha256'
 import {utils} from 'ethers'
@@ -13,16 +13,28 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         this.factory = new PaymentEvmFactory(_config.enviroment)
     }
 
-    async setAdmins(params: SetAdminParams): Promise<Transaction> {
+    async setAdmins(params: SetAdminParams): Promise<SetAdminReponse> {
         const { addresses, isActives, chain } = params
 
         try {  
             const { contract, address } = this.factory.getContract(chain)
             const data = contract.methods.setAdmins(addresses, isActives).encodeABI()
 
-            return {
+            const transaction = {
                 data,
                 contractAddress: address
+            }
+
+            const dataAdmins = addresses.map((address, index) => {
+                return {
+                    address,
+                    isActive: isActives[index]
+                }
+            })
+
+            return {
+                transaction,
+                data: dataAdmins
             }
         } catch (error) {
             throw new Error(error as unknown as string)
@@ -42,7 +54,7 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         }
     }
 
-    async setOracleTokens(params: SetOracleTokensParams): Promise<Transaction> {
+    async setOracleTokens(params: SetOracleTokensParams): Promise<SetOracleTokensReponse> {
         const { params: paramsSetting, chain } = params
 
         try {  
@@ -52,9 +64,20 @@ export class PaymentEvmAdmin extends PaymentAbstract{
             const { contract, address } = this.factory.getContract(chain)
             const data = contract.methods.setOracleTokens(tokenAddresses, oracleAddresses).encodeABI()
 
-            return {
+            const transaction = {
                 data,
                 contractAddress: address
+            }
+
+            const dataOracleTokens = tokenAddresses.map((address, index) => {
+                return {
+                    tokenAddress: address,
+                    oracleAddress: oracleAddresses[index]
+                }
+            })
+            return {
+                transaction,
+                data: dataOracleTokens,
             }
         } catch (error) {
             throw new Error(error as unknown as string)

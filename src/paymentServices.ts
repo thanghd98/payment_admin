@@ -1,6 +1,6 @@
 import { Engines } from "./constants";
 import { PaymentFactory } from "./factory";
-import { AddItemParams, AddItemResponse, Enviroment, IsAdminParams, SetAdminParams, SetOracleTokensParams, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "./types";
+import { AddItemParams, AddItemResponse, Enviroment, IsAdminParams, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "./types";
 
 interface Config {
     enviroment: Enviroment
@@ -21,7 +21,7 @@ export class PaymentAdmin {
         return this
     }
 
-    async setAdmins(params: SetAdminParams): Promise<Transaction>{
+    async setAdmins(params: SetAdminParams): Promise<SetAdminReponse>{
         if(this.factory){
             return await this.factory.setAdmins(params)
         }
@@ -38,7 +38,7 @@ export class PaymentAdmin {
         return false
     }
 
-    async setOracleTokens(params: SetOracleTokensParams): Promise<Transaction>{
+    async setOracleTokens(params: SetOracleTokensParams): Promise<SetOracleTokensReponse>{
         if(this.factory){
             return await this.factory.setOracleTokens(params)
         }

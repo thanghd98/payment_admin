@@ -22,6 +22,14 @@ export interface SetAdminParams {
     chain: chainKey
 }
 
+export interface SetAdminReponse {
+    data: Array<{
+        address: string,
+        isActive: boolean
+    }>
+    transaction: Transaction
+}
+
 export interface IsAdminParams {
     address: string,
     chain: chainKey
@@ -33,6 +41,14 @@ export interface SetOracleTokensParams {
         oracleAddress: string
     }>
     chain: chainKey
+}
+
+export interface SetOracleTokensReponse {
+    data: Array<{
+        tokenAddress: string,
+        oracleAddress: string
+    }>
+    transaction: Transaction
 }
 
 export interface SetPartnerParams {

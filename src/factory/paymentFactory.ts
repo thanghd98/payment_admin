@@ -1,5 +1,5 @@
 import { PaymentAbstract } from "../abstract"
-import { AddItemParams, AddItemResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetOracleTokensParams, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "../types"
+import { AddItemParams, AddItemResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "../types"
 
 export class PaymentFactory {
     engines: PaymentAbstract[]
@@ -19,7 +19,7 @@ export class PaymentFactory {
         return engine
     }
 
-    async setAdmins(params: SetAdminParams): Promise<Transaction>{
+    async setAdmins(params: SetAdminParams): Promise<SetAdminReponse>{
         const { chain } = params
 
         const engine = this.getPaymentByChain(chain)
@@ -52,7 +52,7 @@ export class PaymentFactory {
         throw new Error('Method not implement')
     }
 
-    async setOracleTokens(params: SetOracleTokensParams): Promise<Transaction>{
+    async setOracleTokens(params: SetOracleTokensParams): Promise<SetOracleTokensReponse>{
         const { chain } = params
 
         const engine = this.getPaymentByChain(chain)
