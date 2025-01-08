@@ -1,6 +1,6 @@
 import { CHAIN_DATA } from "@wallet/constants";
 import { PaymentAbstract } from "../../../abstract";
-import { AddItemParams, AddItemResponse, IsAdminParams, ItemParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "../../../types";
+import { AddItemParams, AddItemResponse, IsAdminParams, ItemParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, UodateItemParams, UpdateItemResponse } from "../../../types";
 import { PaymentEvmFactory } from "./factory";
 import hash from 'crypto-js/sha256'
 import {utils} from 'ethers'
@@ -88,7 +88,15 @@ export class PaymentEvmAdmin extends PaymentAbstract{
         const { partnerCode, partnerInfo, chain } = params
 
         try {  
-            const partnerInfoFormat = Object.values(partnerInfo)
+            const { isActive, owner, feeReceiver, protocolFee, commissionFee } = partnerInfo
+            const partnerInfoFormat = Object.values({
+                isActive,
+                owner,
+                feeReceiver,
+                protocolFee,
+                commissionFee
+            })
+
             const { contract, address } = this.factory.getContract(chain)
             const data = contract.methods.createPartner(utils.formatBytes32String(partnerCode), partnerInfoFormat).encodeABI()
 
@@ -120,7 +128,17 @@ export class PaymentEvmAdmin extends PaymentAbstract{
             //convert params
             const itemCodes = paramsSetting.map((item) =>  this.generateItemCode(item?.itemInfo?.partnerCode))
             const itemCodesByte32 = itemCodes.map((item) =>  utils.formatBytes32String(item))
-            const itemInfos = paramsSetting.map((item) => (Object.values({...item?.itemInfo, partnerCode: utils.formatBytes32String(item?.itemInfo?.partnerCode)})))
+            const itemInfos = paramsSetting.map((item) => {
+                const { isActive, partnerCode, tokenAddress, priceInToken, priceInUsd} = item.itemInfo
+
+                return Object.values({
+                    isActive,
+                    partnerCode: utils.formatBytes32String(partnerCode),
+                    tokenAddress,
+                    priceInToken,
+                    priceInUsd
+                })
+            })
 
             const data = contract.methods.setItems(itemCodesByte32, itemInfos).encodeABI()
 
@@ -153,7 +171,17 @@ export class PaymentEvmAdmin extends PaymentAbstract{
 
             //convert params
             const itemCodes = paramsSetting.map((item) => utils.formatBytes32String(item.itemKey))
-            const itemInfos = paramsSetting.map((item) => (Object.values({...item.itemInfo, partnerCode: utils.formatBytes32String(item.itemInfo.partnerCode)})))
+            const itemInfos = paramsSetting.map((item) => {
+                const { isActive, partnerCode, tokenAddress, priceInToken, priceInUsd} = item.itemInfo
+
+                return Object.values({
+                    isActive,
+                    partnerCode: utils.formatBytes32String(partnerCode),
+                    tokenAddress,
+                    priceInToken,
+                    priceInUsd
+                })
+            })
 
             const data = contract.methods.setItems(itemCodes, itemInfos).encodeABI()
 

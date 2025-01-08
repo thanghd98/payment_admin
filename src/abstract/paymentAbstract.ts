@@ -1,4 +1,4 @@
-import { AddItemParams, AddItemResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, Transaction, UodateItemParams, UpdateItemResponse } from "../types";
+import { AddItemParams, AddItemResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, UodateItemParams, UpdateItemResponse } from "../types";
 
 export abstract class PaymentAbstract {
     _config: PaymentEngineConfig  
