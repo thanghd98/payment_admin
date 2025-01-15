@@ -1,8 +1,8 @@
 import Web3 from "web3"
 import { CHAIN_DATA } from '@wallet/constants'
 import { AbiItem } from "ethereum-abi-types-generator"
-import { PaymentContext } from "../../../types/contract"
-import { paymentAbi, paymentContract } from "../../../constants"
+import { MulticallContext, PaymentContext } from "../../../types/contract"
+import { PAYMENT_ABI, paymentContract, MULTICALL_ADDRESS, MULTICALL_ABI } from "../../../constants"
 import { chainKey, Enviroment } from "../../../types"
 
 export class PaymentEvmFactory {
@@ -22,10 +22,21 @@ export class PaymentEvmFactory {
         const client = this.getProvider(chain)
 
         const contract = (new client.eth.Contract(
-            paymentAbi as AbiItem[],
+            PAYMENT_ABI as AbiItem[],
             contractAddress
         ) as unknown) as PaymentContext
 
         return { address: contractAddress, contract }
+    }
+
+    getMultiCallContract(chain: chainKey){
+        const client = this.getProvider(chain)
+
+        const contract = (new client.eth.Contract(
+            MULTICALL_ABI as AbiItem[],
+            MULTICALL_ADDRESS
+        ) as unknown) as MulticallContext
+
+        return { address: MULTICALL_ADDRESS, contract }
     }
 }

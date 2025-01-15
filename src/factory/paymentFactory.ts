@@ -1,5 +1,5 @@
 import { PaymentAbstract } from "../abstract"
-import { AddItemParams, AddItemResponse, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, UodateItemParams, UpdateItemResponse } from "../types"
+import { AddItemParams, AddItemResponse, AggregateParams, IsAdminParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, UodateItemParams, UpdateItemResponse } from "../types"
 
 export class PaymentFactory {
     engines: PaymentAbstract[]
@@ -109,6 +109,23 @@ export class PaymentFactory {
         if(engine){
             try {
                 return engine.updateItems(params)
+            } catch (error) {
+                 throw new Error('Method not implement')
+            }
+        }
+
+        throw new Error('Method not implement')
+    }
+
+    async aggregate(params: AggregateParams): Promise<{data: string, address: string}>{
+        const { chain } = params
+
+        const engine = this.getPaymentByChain(chain)
+
+        if(engine){
+            try {
+                //@ts-expect-error
+                return engine?.aggregate(params)
             } catch (error) {
                  throw new Error('Method not implement')
             }

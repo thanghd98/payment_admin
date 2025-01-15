@@ -1,10 +1,9 @@
 import { CHAIN_DATA } from "@wallet/constants";
 import { PaymentAbstract } from "../../../abstract";
-import { AddItemParams, AddItemResponse, IsAdminParams, ItemParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, UodateItemParams, UpdateItemResponse } from "../../../types";
+import { AddItemParams, AddItemResponse, AggregateParams, IsAdminParams, ItemParams, PaymentEngineConfig, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, UodateItemParams, UpdateItemResponse } from "../../../types";
 import { PaymentEvmFactory } from "./factory";
 import hash from 'crypto-js/sha256'
-import {utils} from 'ethers'
-
+import { utils } from 'ethers'
 export class PaymentEvmAdmin extends PaymentAbstract{
     factory: PaymentEvmFactory
 
@@ -206,7 +205,25 @@ export class PaymentEvmAdmin extends PaymentAbstract{
             .includes(chain)
     }
 
+    async aggregate(params: AggregateParams): Promise<{data: string, address: string}>{
+        const { chain, params: paramsMulticall } = params
+        try {
+            const paramsAggregate = paramsMulticall?.map(params => ([params.address, params.data]))
+            const { contract, address } = this.factory.getMultiCallContract(chain)
+
+            const data = await contract.methods.aggregate(paramsAggregate).encodeABI()
+
+            return {
+                data,
+                address
+            }
+
+        } catch (error) {
+            throw new Error(error as unknown as string)
+        }
+    }
+
     generateItemCode(partnerCode: string){
-        return partnerCode + '-' + hash(JSON.stringify(partnerCode) + new Date().getTime).toString().slice(0,4)
+        return partnerCode + '-' + hash(JSON.stringify(partnerCode) + new Date().getTime + Math.random()).toString().slice(0,4)
     }
 }

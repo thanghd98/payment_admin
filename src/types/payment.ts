@@ -107,3 +107,12 @@ export interface AddItemResponse {
     data: Array<ItemParams>
     transaction: Transaction
 }
+
+
+export interface AggregateParams {
+    chain: chainKey,
+    params: Array<{
+        address: string,
+        data: string
+    }>
+}

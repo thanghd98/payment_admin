@@ -1,6 +1,6 @@
 import { Engines } from "./constants";
 import { PaymentFactory } from "./factory";
-import { AddItemParams, AddItemResponse, Enviroment, IsAdminParams, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, UodateItemParams, UpdateItemResponse } from "./types";
+import { AddItemParams, AddItemResponse, AggregateParams, Enviroment, IsAdminParams, SetAdminParams, SetAdminReponse, SetOracleTokensParams, SetOracleTokensReponse, SetPartnerParams, SetPartnerResponse, UodateItemParams, UpdateItemResponse } from "./types";
 
 interface Config {
     enviroment: Enviroment
@@ -65,6 +65,15 @@ export class PaymentAdmin {
     async addItems(params: AddItemParams): Promise<AddItemResponse>{
         if(this.factory){
             return await this.factory.addItems(params)
+        }
+
+        throw new Error('Method not implement')
+    }
+
+    async aggregate(params: AggregateParams): Promise<{data: string, address: string}>{
+        console.log("🚀 ~ PaymentAdmin ~ aggregator ~ his.factory:", this.factory)
+        if(this.factory){
+            return await this.factory?.aggregate(params)
         }
 
         throw new Error('Method not implement')
